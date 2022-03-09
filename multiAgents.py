@@ -255,7 +255,7 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION: THIS IS NOT WORKING
     """
 
     if currentGameState.isWin(): return sys.maxsize
