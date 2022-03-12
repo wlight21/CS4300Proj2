@@ -255,47 +255,74 @@ def betterEvaluationFunction(currentGameState):
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: THIS IS NOT WORKING
+    DESCRIPTION: 
+
+    <capsuleWeight>
+
+        The number of remaining capsules times 10. This value ensures that consuming
+        a capsule provides more utility than consuming a piece of food.
+
+    </capsuleWeight>
+
+    <foodDist>
+
+        The distance to the closest food from pacman's position.
+
+    </foodDist>
+
+    <return>
+
+        Returning the score of the game state, minus the distance to the closest food, minus the capsule weight
+        incentivizes pacman to reduce its distance to the closest food, but consume any capsules it can
+        see within its depth of search.
+
+    </return>
     """
 
-    if currentGameState.isWin(): return sys.maxsize
-    if currentGameState.isLose(): return -sys.maxsize
+    # max maze distance is every square in the grid
+    capsuleWeight = len(currentGameState.getCapsules()) * 10
+    foodDist = closestFood(currentGameState, 1)
 
-    return currentGameState.getScore() - closestFood(currentGameState) + 1
-
-"""
-Returns the maze length of the path to the nearest food
-from pacman's position in the given game state 
-"""
-def closestFood(gameState):
-
-    path = 0
-    q = util.Queue()
-    visited = {}
-
-    q.push(gameState.getPacmanPosition())
-
-    while not q.isEmpty():
-
-        position = q.pop()
-        visited[position] = True
-        path += 1
-
-        if gameState.hasFood(position[0], position[1]): break
-
-        for action in gameState.getLegalActions():
-            position = gameState.generatePacmanSuccessor(action).getPacmanPosition()
-            if position not in visited: q.push(position)
-
-    return path
+    return currentGameState.getScore() - foodDist - capsuleWeight
 
 """
-Returns the maze length of the path to the nearest ghost
-from pacman's position in the given game state
+Returns the maze length to the ith nearest food to pacmans
+position in the given gamestate
 """
-def closestGhost(gameState):
+def closestFood(gameState, i):
 
-    util.raiseNotDefined()
+    if gameState.getNumFood() < i: i = gameState.getNumFood()
+
+    paths = util.Queue()
+    seen = 0
+
+    frontier = util.Queue()
+    visited = set([])
+
+    paths.push([])
+    frontier.push(gameState)
+    visited.add(gameState.getPacmanPosition())
+
+    while not frontier.isEmpty():
+
+        path = paths.pop()
+        state = frontier.pop()
+        position = state.getPacmanPosition()
+
+        if gameState.hasFood(position[0], position[1]):
+            seen += 1
+
+        if seen >= i:
+            return len(path) - 1
+
+        for action in state.getLegalActions():
+            front = state.generatePacmanSuccessor(action)
+            if front.getPacmanPosition() not in visited:
+                paths.push(path + [front.getPacmanPosition()])
+                frontier.push(front)
+                visited.add(front.getPacmanPosition())
+
+    return -1
 
 # Abbreviation
 better = betterEvaluationFunction
