@@ -229,8 +229,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
         if gameState.isWin() or gameState.isLose(): return self.evaluationFunction(gameState)
 
-        if depth % gameState.getNumAgents() == 0:  return self.max(gameState, depth + 1)
-        else:   return self.expValue(gameState, depth + 1, depth % gameState.getNumAgents())
+        if depth % gameState.getNumAgents() == 0: return self.max(gameState, depth + 1)
+        else: return self.expValue(gameState, depth + 1, depth % gameState.getNumAgents())
 
     def max(self, gameState, depth, agentIndex = 0):
         
@@ -278,15 +278,13 @@ def betterEvaluationFunction(currentGameState):
 
     </return>
     """
-
-    # max maze distance is every square in the grid
     capsuleWeight = len(currentGameState.getCapsules()) * 10
     foodDist = closestFood(currentGameState, 1)
 
     return currentGameState.getScore() - foodDist - capsuleWeight
 
 """
-Returns the maze length to the ith nearest food to pacmans
+Returns the maze length to the ith nearest food to pacman's
 position in the given gamestate
 """
 def closestFood(gameState, i):
