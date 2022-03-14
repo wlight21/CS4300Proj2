@@ -279,46 +279,42 @@ def betterEvaluationFunction(currentGameState):
     </return>
     """
     capsuleWeight = len(currentGameState.getCapsules()) * 10
-    foodDist = closestFood(currentGameState, 1)
+    foodDist = closestFood(currentGameState)
 
     return currentGameState.getScore() - foodDist - capsuleWeight
 
+
 """
-Returns the maze length to the ith nearest food to pacman's
+Returns the maze length to the nearest food to pacman's
 position in the given gamestate
 """
-def closestFood(gameState, i):
+def closestFood(gameState):
 
-    if gameState.getNumFood() < i: i = gameState.getNumFood()
-
-    paths = util.Queue()
-    seen = 0
-
-    frontier = util.Queue()
+    front = util.Queue()
     visited = set([])
 
-    paths.push([])
-    frontier.push(gameState)
-    visited.add(gameState.getPacmanPosition())
+    front.push(gameState)
 
-    while not frontier.isEmpty():
+    size = 1
+    path = 0
 
-        path = paths.pop()
-        state = frontier.pop()
-        position = state.getPacmanPosition()
+    while not front.isEmpty():
 
-        if gameState.hasFood(position[0], position[1]):
-            seen += 1
+        for i in range(size):
 
-        if seen >= i:
-            return len(path) - 1
+            state = front.pop()
+            position = state.getPacmanPosition()
 
-        for action in state.getLegalActions():
-            front = state.generatePacmanSuccessor(action)
-            if front.getPacmanPosition() not in visited:
-                paths.push(path + [front.getPacmanPosition()])
-                frontier.push(front)
-                visited.add(front.getPacmanPosition())
+            if gameState.hasFood(position[0], position[1]): return path
+
+            for action in state.getLegalActions():
+                successor = state.generatePacmanSuccessor(action)
+                if successor.getPacmanPosition() not in visited:
+                    front.push(successor)
+                    visited.add(successor.getPacmanPosition())
+
+        path += 1
+        size = len(front.list)
 
     return -1
 
